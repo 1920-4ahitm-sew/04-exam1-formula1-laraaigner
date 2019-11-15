@@ -1,8 +1,6 @@
 package at.htl.formula1.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -10,9 +8,13 @@ import java.time.LocalDate;
  *
  * The id's are not assigned by the database. The id's are given.
  */
+@Table (name = "F1_RACE")
 public class Race {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String country;
     private LocalDate date;
 

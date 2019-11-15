@@ -23,14 +23,17 @@ public class ResultsRestClient {
     private Client client;
     private WebTarget target;
 
+
     /**
      * Vom RestEndpoint werden alle Result abgeholt und in ein JsonArray gespeichert.
      * Dieses JsonArray wird an die Methode persistResult(...) übergeben
      */
     public void readResultsFromEndpoint() {
 
-        JsonArray payload = null;
-
+        client = ClientBuilder.newClient();
+        target = client.target(RESULTS_ENDPOINT);
+        Response response = (Response) target.request(MediaType.APPLICATION_JSON);
+        JsonArray payload = response.readEntity(JsonArray.class);
         persistResult(payload);
     }
 

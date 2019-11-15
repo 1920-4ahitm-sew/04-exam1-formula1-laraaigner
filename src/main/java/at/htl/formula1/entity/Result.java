@@ -7,6 +7,13 @@ import javax.persistence.*;
  * <p>
  * The id's are assigned by the database.
  */
+/*@NamedQueries({
+        @NamedQuery(
+                name = "sumOfPoints",
+                query = "select sum(points) from Result"
+        )
+})*/
+@Table(name = "F1_RESULT")
 public class Result {
 
     @Transient

@@ -7,6 +7,8 @@ import javax.persistence.*;
  * <p>
  * The id's are  assigned by the database.
  */
+
+@Table(name = "F1_DRIVER")
 public class Driver {
 
     private Long id;
