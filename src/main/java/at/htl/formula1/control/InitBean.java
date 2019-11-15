@@ -69,6 +69,7 @@ public class InitBean {
                 em.persist(rowRaces[2]);*/
 
 
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -95,8 +96,7 @@ public class InitBean {
                 String [] rowTeams = line.split(";");
                 System.out.println(rowTeams);
 
-                /*em.persist(rowTeams[0]);
-                em.persist(rowTeams[1]);
+                /*em.persist(rowTeams[1]);
                 em.persist(rowTeams[2]);*/
             }
         } catch (FileNotFoundException e) {
