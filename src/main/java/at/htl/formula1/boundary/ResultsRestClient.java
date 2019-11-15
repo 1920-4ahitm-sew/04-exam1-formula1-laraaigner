@@ -60,6 +60,9 @@ public class ResultsRestClient {
     @Transactional
     void persistResult(JsonArray resultsJson) {
 
+        for (JsonValue jsonValue : resultsJson) {
+            JsonObject resultJson = jsonValue.asJsonObject();
+        }
     }
 
 }
