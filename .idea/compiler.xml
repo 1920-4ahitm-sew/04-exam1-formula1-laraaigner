@@ -9,8 +9,5 @@
         <module name="formula1" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="formula1" target="11" />
-    </bytecodeTargetLevel>
   </component>
 </project>
