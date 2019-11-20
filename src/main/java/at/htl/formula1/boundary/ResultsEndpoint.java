@@ -50,7 +50,15 @@ public class ResultsEndpoint {
         return null;
     }
 
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPointsSumOfAllDrivers() {
+        List<Object[]> elements = em
+                .createNamedQuery("Result.sumPointsForAllDrivers", Object[].class)
+                .getResultList();
 
-    // Ergänzen Sie Ihre eigenen Methoden ...
+        return Response.ok(elements).build();
+    }
 
 }

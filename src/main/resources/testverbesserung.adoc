@@ -129,3 +129,18 @@ Wie sie hätte aussehen sollen:
                 .build();
     }
 ----
+
+Eigene Methoden sollten in der Klasse ResultsEndPoint implememtiert werden, hier ein Bsp:
+[source, java]
+----
+ @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPointsSumOfAllDrivers() {
+        List<Object[]> elements = em
+                .createNamedQuery("Result.sumPointsForAllDrivers", Object[].class)
+                .getResultList();
+
+        return Response.ok(elements).build();
+    }
+----
