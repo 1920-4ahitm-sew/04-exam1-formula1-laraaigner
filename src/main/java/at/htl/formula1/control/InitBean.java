@@ -60,7 +60,7 @@ public class InitBean {
     private void readRacesFromFile(String racesFileName) {
         URL url = Thread.currentThread().getContextClassLoader()
                 .getResource(racesFileName);
-        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {// Charset.forName("UTF-8"))) {
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {
             stream.skip(1)
                     .map((String s) -> s.split(";"))
                     .map(a -> new Race(Long.valueOf(a[0]), a[1], LocalDate.parse(a[2], dtf)))
@@ -82,7 +82,7 @@ public class InitBean {
     private void readTeamsAndDriversFromFile(String teamFileName) {
         URL url = Thread.currentThread().getContextClassLoader()
                 .getResource(teamFileName);
-        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {// Charset.forName("UTF-8"))) {
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {
             stream.skip(1)
                     .map((String s) -> s.split(";"))
                     .forEach(this::persistTeamAndDrivers);

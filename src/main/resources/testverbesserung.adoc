@@ -1,0 +1,131 @@
+= TestVerbesserung Aigner Lara
+
+Falschen Port von 1521 uz 1527 geändert
+
+=== Aufgabe 1:
+
+Falsche Variante zum Einlesen
+[source, java]
+----
+private void readRacesFromFile(String racesFileName) {
+        try {
+            BufferedReader br1 = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/races.csv")));
+            br1.readLine();
+            String line;
+            while ((line = br1.readLine()) != null) {
+                String [] rowRaces = line.split(";");
+                System.out.println(rowRaces);
+
+                /*em.persist(rowRaces[0]);
+                em.persist(rowRaces[1]);
+                em.persist(rowRaces[2]);*/
+
+
+
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        }
+----
+Hier die Methode mit der besseren Variante Files einzulesen
+[source, java]
+----
+ private void readRacesFromFile(String racesFileName) {
+        URL url = Thread.currentThread().getContextClassLoader()
+                .getResource(racesFileName);
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {
+            stream.skip(1)
+                    .map((String s) -> s.split(";"))
+                    .map(a -> new Race(Long.valueOf(a[0]), a[1], LocalDate.parse(a[2], dtf)))
+                    .forEach(em::merge);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+----
+
+=== Aufgabe 2:
+
+In der Klasse ResultRestClient, Methode persistResult() war unvollständing
+[source, java]
+----
+ @Transactional
+    void persistResult(JsonArray resultsJson) {
+
+        for (JsonValue jsonValue : resultsJson) {
+            JsonObject resultJson = jsonValue.asJsonObject();
+        }
+    }
+----
+Hier die richitge Methode:
+----
+  for (JsonValue jsonValue : resultsJson) {
+            JsonObject resultJson = jsonValue.asJsonObject();
+            Driver driver = em
+                    .createNamedQuery("Driver.findByName", Driver.class)
+                    .setParameter("NAME", resultJson.getString("driverFullName"))
+                    .getSingleResult();
+
+            Race race = em
+                    .createQuery("select r from Race r where r.id = :ID", Race.class)
+                    .setParameter("ID", Long.valueOf(resultJson.getInt("raceNo")))
+                    .getSingleResult();
+
+            em.persist(new Result(
+                    race,
+                    resultJson.getInt("position"),
+                    driver
+            ));
+        }
+    }
+----
+
+=== Aufgabe 3:
+
+Methode getPointsSumOfDriver() unvollständig
+
+[source, java]
+----
+@GET
+    @Path("name")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject getPointsSumOfDriver(@QueryParam("name") String name) {
+        try {
+
+            return null;
+
+        }catch (NoResultException e){
+            throw new WebApplicationException(Response.Status.BAD_GATEWAY);
+        }
+
+    }
+----
+
+Wie sie hätte aussehen sollen:
+[source, java]
+----
+@GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject getPointsSumOfDriver(
+            @QueryParam("name") String name
+    ) {
+        Long points = em
+                .createNamedQuery("Result.sumPointsForDriver", Long.class)
+                .setParameter("NAME", name)
+                .getSingleResult();
+
+        Driver driver = em
+                .createNamedQuery("Driver.findByName", Driver.class)
+                .setParameter("NAME", name)
+                .getSingleResult();
+
+        return Json
+                .createObjectBuilder()
+                .add("driver", driver.getName())
+                .add("points", points)
+                .build();
+    }
+----

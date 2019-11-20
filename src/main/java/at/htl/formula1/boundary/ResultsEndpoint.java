@@ -21,17 +21,25 @@ public class ResultsEndpoint {
      * @return JsonObject
      */
     @GET
-    @Path("name")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject getPointsSumOfDriver(@QueryParam("name") String name) {
-        try {
+    public JsonObject getPointsSumOfDriver(
+            @QueryParam("name") String name
+    ) {
+        Long points = em
+                .createNamedQuery("Result.sumPointsForDriver", Long.class)
+                .setParameter("NAME", name)
+                .getSingleResult();
 
-            return null;
+        Driver driver = em
+                .createNamedQuery("Driver.findByName", Driver.class)
+                .setParameter("NAME", name)
+                .getSingleResult();
 
-        }catch (NoResultException e){
-            throw new WebApplicationException(Response.Status.BAD_GATEWAY);
-        }
-
+        return Json
+                .createObjectBuilder()
+                .add("driver", driver.getName())
+                .add("points", points)
+                .build();
     }
 
     /**
