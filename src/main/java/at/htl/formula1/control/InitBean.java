@@ -36,6 +36,8 @@ public class InitBean {
     @PersistenceContext
     EntityManager em;
 
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     @Inject
     ResultsRestClient client;
 
@@ -56,27 +58,17 @@ public class InitBean {
      */
     @Transactional
     private void readRacesFromFile(String racesFileName) {
-        try {
-            BufferedReader br1 = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/races.csv")));
-            br1.readLine();
-            String line;
-            while ((line = br1.readLine()) != null) {
-                String [] rowRaces = line.split(";");
-                System.out.println(rowRaces);
-
-                /*em.persist(rowRaces[0]);
-                em.persist(rowRaces[1]);
-                em.persist(rowRaces[2]);*/
-
-
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        URL url = Thread.currentThread().getContextClassLoader()
+                .getResource(racesFileName);
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {// Charset.forName("UTF-8"))) {
+            stream.skip(1)
+                    .map((String s) -> s.split(";"))
+                    .map(a -> new Race(Long.valueOf(a[0]), a[1], LocalDate.parse(a[2], dtf)))
+                    .forEach(em::merge);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        }
+    }
 
 
     /**
@@ -88,19 +80,12 @@ public class InitBean {
      */
     @Transactional
     private void readTeamsAndDriversFromFile(String teamFileName) {
-        try {
-            BufferedReader br2 = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/teams.csv")));
-            br2.readLine();
-            String line;
-            while ((line = br2.readLine()) != null) {
-                String [] rowTeams = line.split(";");
-                System.out.println(rowTeams);
-
-                /*em.persist(rowTeams[1]);
-                em.persist(rowTeams[2]);*/
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        URL url = Thread.currentThread().getContextClassLoader()
+                .getResource(teamFileName);
+        try (Stream<String> stream = Files.lines(Paths.get(url.getPath()), StandardCharsets.UTF_8)) {// Charset.forName("UTF-8"))) {
+            stream.skip(1)
+                    .map((String s) -> s.split(";"))
+                    .forEach(this::persistTeamAndDrivers);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,7 +104,19 @@ public class InitBean {
 
     private void persistTeamAndDrivers(String[] line) {
 
+        Team team = null;
+        try {
+            team = em
+                    .createNamedQuery("Team.findByName", Team.class)
+                    .setParameter("NAME", line[0])
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            team = new Team(line[0]);
+            em.persist(team);
+        }
+        em.persist(new Driver(line[1], team));
+        em.persist(new Driver(line[2], team));
     }
-
-
 }
+
+
