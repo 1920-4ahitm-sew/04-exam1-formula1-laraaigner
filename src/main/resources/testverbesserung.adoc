@@ -144,3 +144,14 @@ Eigene Methoden sollten in der Klasse ResultsEndPoint implememtiert werden, hier
         return Response.ok(elements).build();
     }
 ----
+
+[source, java]
+Queries fehlten in Driver, Race, Result und Team
+----
+@NamedQueries({
+        @NamedQuery(
+                name = "Driver.findByName",
+                query = "select d from Driver d where d.name = :NAME"
+        )
+})
+----

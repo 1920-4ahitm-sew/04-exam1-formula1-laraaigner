@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Apache Derby (Remote)" uuid="3024129f-a676-48d8-b265-5c3c13c3cdc8">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="DERBY" exact-version="0" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>app</user-name>
+    </data-source>
+  </component>
+</project>
